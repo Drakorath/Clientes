@@ -16,41 +16,39 @@ const OBTENER_USUARIO = gql`
 const Header = () => {
 
     const router = useRouter();
-    //Si No Hay DATOS DEL SERVIDOR
-    if (!localStorage.getItem('token')) {
-        router.push('/login');
-    }
-    // apolllo query
+
+    // apollo query
     const { data, loading, error } = useQuery(OBTENER_USUARIO)
 
-    // Protect to not access data until we get the results
-    if (loading) {
-        return <p>Loading...</p>;
+    // proteccion para no tener acceso a los datos
+    if (loading) return null;
+    /*  */
+    // si no esta la info
+    if (!data || data && !data.obtenerUsuario) {
+        return router.push('/Access/login');
     }
- 
-    // If not information
-    // if (!data || data && !data.obtenerUsuario) return router.push('/login');
+
+    function refreshPage() {
+        window.location.reload(false);
+    }
 
     const { nombre, apellido } = data.obtenerUsuario
-
+    9
     const cerrarSesion = () => {
         localStorage.removeItem('token');
-        client.clearStore();
-        router.push('/login');
-    };
+        router.push('/Access/login');
+        setTimeout(() => {
+            refreshPage();
+        }, 1000);
+    }
 
     return (
         <div className='sm:flex sm:justify-between mb-6'>
-            <p className='mr-3 mb-5 lg:mb-0'>Hola: {nombre} {apellido} </p>
-
-            <button
-                type='button'
-                className="bg-blue-800 w-full sm:w-auto font-bold uppercase text-xs rounded py-1 px-2 text-white shadow-md"    
-                onClick={() => cerrarSesion()}
-            >
-                Cerrar sesion
+            <p className='mr-3 mb-5 lg:mb-0'>Hola {nombre} {apellido} </p>
+            <button className='bg-blue-800 w-full sm:w-auto font-bold uppercase text-sm rounded py-3 px-3 text-white shadow-md'
+                type='button' onClick={() => cerrarSesion()} >
+                Cerrar Sesion
             </button>
-
         </div>
     )
 }
